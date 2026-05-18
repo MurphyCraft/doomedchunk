@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "doomedchunks",
+  "version": "${version}",
+  "name": "Doomed Chunks",
+  "description": "At dusk, the chunks where players reside are scheduled for destruction. You have been warned.",
+  "authors": [
+    "MurphyCraft"
+  ],
+  "contact": {
+    "homepage": "https://github.com/MurphyCraft/doomedchunk",
+    "sources": "https://github.com/MurphyCraft/doomedchunk",
+    "issues": "https://github.com/MurphyCraft/doomedchunk/issues"
+  },
+  "license": "MIT",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "com.doomedchunks.DoomedChunksMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "fabric-api": "*",
+    "minecraft": "~26.1"
+  }
+}
