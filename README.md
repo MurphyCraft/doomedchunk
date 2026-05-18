@@ -65,14 +65,17 @@ run it again.
 ## Releasing (maintainers)
 
 Pushing a tag of the form `v*` builds the jar and publishes a GitHub Release
-with the jar attached. The version baked into the jar comes from
-`mod_version` in `gradle.properties`, so bump it before tagging:
+with the jar attached. **The mod version is taken from the tag** (the leading
+`v` is stripped and passed to Gradle as `-Pmod_version`), so you do *not* need
+to edit `gradle.properties` before releasing — just tag and push:
 
 ```bash
-# set mod_version=1.2.0 in gradle.properties, commit, then:
 git tag v1.2.0
-git push origin v1.2.0
+git push origin v1.2.0   # -> builds doomedchunks-1.2.0.jar, publishes release
 ```
+
+The `mod_version` in `gradle.properties` is only the fallback used for local
+`./gradlew build` runs; the tag overrides it in CI.
 
 See [.github/workflows/release.yml](.github/workflows/release.yml).
 
