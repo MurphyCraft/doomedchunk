@@ -4,6 +4,23 @@ name: Build and Release
 # with the jar(s) attached. The mod version is taken from the tag itself
 # (the leading "v" is stripped) and passed to Gradle as -Pmod_version, so
 # you do NOT need to bump mod_version in gradle.properties before tagging.
+#
+# Platform publishing (Modrinth / CurseForge) via mc-publish requires four
+# values to be set in the repository settings before they will run:
+#
+#   Settings → Secrets and variables → Actions
+#
+#   Secrets (sensitive — stored encrypted):
+#     MODRINTH_TOKEN    API token from https://modrinth.com/settings/pats
+#     CURSEFORGE_TOKEN  API token from https://www.curseforge.com/account/api-keys
+#
+#   Variables (non-sensitive — visible in plain text):
+#     MODRINTH_PROJECT_ID    Your Modrinth project slug or ID  (e.g. doomedchunks)
+#     CURSEFORGE_PROJECT_ID  Your CurseForge project ID        (e.g. 123456)
+#
+# Each platform step is skipped automatically if its token / project ID is
+# not configured, so the workflow still succeeds as a pure GitHub Release
+# until you are ready to publish on those platforms.
 on:
   push:
     tags:
@@ -119,3 +136,43 @@ jobs:
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: build/libs/*.jar
+
+      # ── Modrinth ────────────────────────────────────────────────────────────
+      # Skipped automatically if MODRINTH_TOKEN or MODRINTH_PROJECT_ID are not
+      # configured in repository Settings → Secrets and variables → Actions.
+      - name: Publish to Modrinth
+        if: ${{ vars.MODRINTH_PROJECT_ID != '' && secrets.MODRINTH_TOKEN != '' }}
+        uses: Kir-Antipov/mc-publish@v3.3.0
+        with:
+          modrinth-id: ${{ vars.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          files: build/libs/!(*-sources).jar
+          name: Doomed Chunks ${{ steps.version.outputs.version }}
+          version: ${{ steps.version.outputs.version }}
+          version-type: release
+          game-versions: 26.1.2
+          loaders: fabric
+          dependencies: |
+            fabric-api | required
+          changelog-file: release-notes.md
+          fail-on-upload-errors: true
+
+      # ── CurseForge ──────────────────────────────────────────────────────────
+      # Skipped automatically if CURSEFORGE_TOKEN or CURSEFORGE_PROJECT_ID are
+      # not configured in repository Settings → Secrets and variables → Actions.
+      - name: Publish to CurseForge
+        if: ${{ vars.CURSEFORGE_PROJECT_ID != '' && secrets.CURSEFORGE_TOKEN != '' }}
+        uses: Kir-Antipov/mc-publish@v3.3.0
+        with:
+          curseforge-id: ${{ vars.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          files: build/libs/!(*-sources).jar
+          name: Doomed Chunks ${{ steps.version.outputs.version }}
+          version: ${{ steps.version.outputs.version }}
+          version-type: release
+          game-versions: 26.1.2
+          loaders: fabric
+          dependencies: |
+            fabric-api | required
+          changelog-file: release-notes.md
+          fail-on-upload-errors: true
