@@ -141,7 +141,7 @@ jobs:
       # Skipped automatically if MODRINTH_TOKEN or MODRINTH_PROJECT_ID are not
       # configured in repository Settings → Secrets and variables → Actions.
       - name: Publish to Modrinth
-        if: ${{ vars.MODRINTH_PROJECT_ID != '' && secrets.MODRINTH_TOKEN != '' }}
+        if: ${{ vars.MODRINTH_PROJECT_ID != '' }}
         uses: Kir-Antipov/mc-publish@v3.3.0
         with:
           modrinth-id: ${{ vars.MODRINTH_PROJECT_ID }}
@@ -161,7 +161,7 @@ jobs:
       # Skipped automatically if CURSEFORGE_TOKEN or CURSEFORGE_PROJECT_ID are
       # not configured in repository Settings → Secrets and variables → Actions.
       - name: Publish to CurseForge
-        if: ${{ vars.CURSEFORGE_PROJECT_ID != '' && secrets.CURSEFORGE_TOKEN != '' }}
+        if: ${{ vars.CURSEFORGE_PROJECT_ID != '' }}
         uses: Kir-Antipov/mc-publish@v3.3.0
         with:
           curseforge-id: ${{ vars.CURSEFORGE_PROJECT_ID }}
