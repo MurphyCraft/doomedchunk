@@ -53,11 +53,69 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
+      - name: Generate release notes
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          cat > release-notes.md <<EOF
+          ## Doomed Chunks v${VERSION}
+
+          A **server-side** Fabric mod for Minecraft **26.1.2**. At dusk each
+          in-game day, the chunk every online player is standing in is doomed
+          and erased after a 5-minute countdown. You are not teleported out.
+
+          ### ✨ What's included in this release
+          - Automatic dusk detection — arms once per in-game day
+          - 5-minute countdown with warnings at 5m / 3m / 1m / 30s / 10s / 5s
+          - Server-wide broadcasts **and** personal warnings for players in danger
+          - Persistent red **"You Are In A Doomed Chunk"** boss bar at the top of
+            the screen while you stand on doomed ground
+          - Block-by-block chunk destruction at T-0 (players are *not* moved)
+          - Server-side only — players don't install anything
+
+          ### 📦 Requirements
+          | | Version |
+          |---|---|
+          | Minecraft | 26.1.2 |
+          | Fabric Loader | 0.18.5 |
+          | Fabric API | 0.149.0+26.1.2 |
+          | Java (server runtime) | 25 |
+
+          ### 🚀 How to use the downloaded files
+          Two jars are attached under **Assets** below:
+
+          - **\`doomedchunks-${VERSION}.jar\`** — the mod. **This is the one you install.**
+          - \`doomedchunks-${VERSION}-sources.jar\` — source code for developers;
+            **not** needed to run the mod. Ignore it for normal use.
+
+          Install on a server:
+          1. Download **\`doomedchunks-${VERSION}.jar\`** from Assets below.
+          2. Download the matching [Fabric API](https://modrinth.com/mod/fabric-api)
+             jar for 26.1.2 (\`fabric-api-0.149.0+26.1.2.jar\`).
+          3. Drop **both** jars into your server's \`mods/\` folder.
+          4. Start the server with **Java 25** and join.
+
+          Trigger it in-game from the server console or as OP:
+          \`/time set 13000\` (immediate dusk) or \`/time set 12500\`
+          (watch the countdown ramp up).
+
+          > ⚠️ Block destruction is **permanent** — don't test on a world you
+          > care about.
+          >
+          > ℹ️ If you instead download the build from the **Actions** tab, it's a
+          > \`.zip\` containing these same jars — unzip it and use
+          > \`doomedchunks-${VERSION}.jar\` the same way.
+          EOF
+          echo "Generated release-notes.md:"
+          cat release-notes.md
+
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: Doomed Chunks ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
+          body_path: release-notes.md
+          append_body: true
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: build/libs/*.jar
